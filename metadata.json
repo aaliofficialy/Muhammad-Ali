@@ -1,0 +1,8 @@
+{
+  "name": "Remix: Muhammad Ali Portfolio",
+  "description": "IT, Crypto \u0026 Social Growth Expert portfolio showcasing system architecture, web solutions, and marketing strategies.",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

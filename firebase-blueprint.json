@@ -1,0 +1,168 @@
+{
+  "entities": {
+    "Article": {
+      "title": "Article",
+      "description": "A blog post or article",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "slug": { "type": "string" },
+        "content": { "type": "string" },
+        "excerpt": { "type": "string" },
+        "category": { "type": "string" },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "thumbnail": { "type": "string" },
+        "publishDate": { "type": "string", "format": "date-time" },
+        "author": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "avatar": { "type": "string" },
+            "title": { "type": "string" }
+          }
+        },
+        "featured": { "type": "boolean" },
+        "status": { "type": "string", "enum": ["draft", "published"] }
+      },
+      "required": ["title", "slug", "content", "category", "publishDate", "status"]
+    },
+    "Comment": {
+      "title": "Comment",
+      "description": "User comment on an article",
+      "type": "object",
+      "properties": {
+        "articleId": { "type": "string" },
+        "author": { "type": "string" },
+        "content": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["articleId", "author", "content", "createdAt"]
+    },
+    "Project": {
+      "title": "Project",
+      "description": "Portfolio project item",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "longDescription": { "type": "string" },
+        "category": { "type": "string" },
+        "image": { "type": "string" },
+        "link": { "type": "string" },
+        "featured": { "type": "boolean" },
+        "technologies": { "type": "array", "items": { "type": "string" } },
+        "metrics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "label": { "type": "string" },
+              "value": { "type": "string" }
+            }
+          }
+        }
+      },
+      "required": ["title", "description", "category", "image"]
+    },
+    "Service": {
+      "title": "Service",
+      "description": "Professional service offered",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "subtitle": { "type": "string" },
+        "description": { "type": "string" },
+        "icon": { "type": "string" },
+        "category": { "type": "string" },
+        "features": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["title", "subtitle", "description", "icon", "category"]
+    },
+    "Testimonial": {
+      "title": "Testimonial",
+      "description": "Client feedback",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "role": { "type": "string" },
+        "company": { "type": "string" },
+        "avatar": { "type": "string" },
+        "rating": { "type": "number" },
+        "content": { "type": "string" }
+      },
+      "required": ["name", "role", "content", "rating"]
+    },
+    "PersonalInfo": {
+      "title": "PersonalInfo",
+      "description": "User profile information",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "title": { "type": "string" },
+        "tagline": { "type": "string" },
+        "email": { "type": "string" },
+        "location": { "type": "string" },
+        "whatsapp": { "type": "string" },
+        "bioShort": { "type": "string" },
+        "itExpertiseDescription": { "type": "string" },
+        "cryptoExpertiseDescription": { "type": "string" },
+        "linkedin": { "type": "string" },
+        "twitter": { "type": "string" },
+        "github": { "type": "string" },
+        "experienceYears": { "type": "string" },
+        "completedProjects": { "type": "string" },
+        "consultationHours": { "type": "string" }
+      }
+    },
+    "Ad": {
+      "title": "Ad",
+      "description": "AdSense ad configuration",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "code": { "type": "string" },
+        "location": { "type": "string" },
+        "articleId": { "type": "string" },
+        "enabled": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "code", "location", "enabled", "createdAt", "updatedAt"]
+    },
+    "ContactSubmission": {
+      "title": "ContactSubmission",
+      "description": "Contact form submissions",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "subject": { "type": "string" },
+        "message": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "read": { "type": "boolean" }
+      },
+      "required": ["name", "email", "message", "createdAt", "read"]
+    },
+    "Admin": {
+      "title": "Admin",
+      "description": "List of admin users",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string" },
+        "role": { "type": "string" }
+      },
+      "required": ["email", "role"]
+    }
+  },
+  "firestore": {
+    "articles": { "schema": "Article" },
+    "comments": { "schema": "Comment" },
+    "projects": { "schema": "Project" },
+    "services": { "schema": "Service" },
+    "testimonials": { "schema": "Testimonial" },
+    "personalInfo": { "schema": "PersonalInfo" },
+    "ads": { "schema": "Ad" },
+    "contactSubmissions": { "schema": "ContactSubmission" },
+    "admins": { "schema": "Admin" }
+  }
+}

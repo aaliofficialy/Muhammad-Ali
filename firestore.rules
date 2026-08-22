@@ -1,0 +1,133 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} { 
+      allow read, write: if false; 
+    }
+
+    // Helpers
+    function isValidId(id) { return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+    function isSignedIn() { return request.auth != null && request.auth.token.email_verified == true; }
+    // Includes bootstrapping the main admin email
+    function isAdmin() { return isSignedIn() && (request.auth.token.email == 'aaliofficialy@gmail.com' || exists(/databases/$(database)/documents/admins/$(request.auth.uid))); }
+
+    // Validation Blueprints
+    function isValidAdmin(data) {
+      return data.keys().size() == 2 &&
+             data.keys().hasAll(['email', 'role']) &&
+             data.email is string && data.email.size() <= 200 &&
+             data.role is string && data.role.size() <= 50;
+    }
+
+    function isValidArticle(data, isCreate) {
+      let hasRequired = data.keys().hasAll(['title', 'slug', 'content', 'category', 'publishDate', 'status']);
+      let size = isCreate ? 11 : data.keys().size(); // Adjust size based on optional fields
+      return hasRequired &&
+             data.title is string && data.title.size() <= 256 &&
+             data.slug is string && data.slug.size() <= 256 &&
+             data.content is string && data.content.size() <= 1048576 &&
+             data.category is string && data.category.size() <= 100 &&
+             data.publishDate is string && data.publishDate.size() <= 50 &&
+             data.status is string && data.status.size() <= 50 &&
+             (!('excerpt' in data) || (data.excerpt is string && data.excerpt.size() <= 1000)) &&
+             (!('thumbnail' in data) || (data.thumbnail is string && data.thumbnail.size() <= 1000)) &&
+             (!('tags' in data) || (data.tags is list && data.tags.size() <= 20)) &&
+             (!('featured' in data) || data.featured is bool) &&
+             (!('author' in data) || data.author is map);
+    }
+
+    function isValidComment(data, isCreate) {
+      return data.keys().hasAll(['articleId', 'author', 'content', 'createdAt']) &&
+             data.articleId is string && data.articleId.size() <= 128 &&
+             data.author is string && data.author.size() <= 100 &&
+             data.content is string && data.content.size() <= 2000 &&
+             data.createdAt is string && data.createdAt.size() <= 50;
+    }
+
+    function isValidAd(data, isCreate) {
+      let hasRequired = data.keys().hasAll(['name', 'code', 'location', 'enabled', 'createdAt', 'updatedAt']);
+      return hasRequired &&
+             data.name is string && data.name.size() <= 100 &&
+             data.code is string && data.code.size() <= 10000 && // Adsense codes can be long
+             data.location is string && data.location.size() <= 50 &&
+             data.enabled is bool &&
+             data.createdAt is string && data.createdAt.size() <= 50 &&
+             data.updatedAt is string && data.updatedAt.size() <= 50 &&
+             (!('articleId' in data) || (data.articleId is string && data.articleId.size() <= 128));
+    }
+
+    // Add minimal validation for Portfolio collections (Projects, Services, Testimonials, PersonalInfo) - simplified for brevity since they are admin-only writes
+    function isValidPortfolioItem(data) {
+      return data is map;
+    }
+    function isValidContact(data) {
+      return data.keys().hasAll(['name', 'email', 'message', 'createdAt', 'read']) &&
+             data.name is string && data.name.size() <= 100 &&
+             data.email is string && data.email.size() <= 200 &&
+             (!('subject' in data) || (data.subject is string && data.subject.size() <= 200)) &&
+             data.message is string && data.message.size() <= 5000 &&
+             data.createdAt is string && data.createdAt.size() <= 50 &&
+             data.read is bool;
+    }
+
+    // Rules
+    match /admins/{userId} {
+      allow read: if isAdmin();
+      allow create: if isAdmin() && isValidId(userId) && isValidAdmin(incoming());
+      allow update: if isAdmin() && isValidId(userId) && incoming().diff(existing()).affectedKeys().hasOnly(['role']);
+      allow delete: if isAdmin();
+    }
+
+    match /articles/{articleId} {
+      allow read: if resource.data.status == 'published' || isAdmin();
+      allow create: if isAdmin() && isValidId(articleId) && isValidArticle(incoming(), true);
+      allow update: if isAdmin() && isValidId(articleId) && isValidArticle(incoming(), false);
+      allow delete: if isAdmin();
+    }
+
+    match /comments/{commentId} {
+      // Anyone can read comments
+      allow read: if true;
+      // Anyone can create a comment (with valid data)
+      allow create: if isValidId(commentId) && isValidComment(incoming(), true);
+      // Only admins can delete/update
+      allow update, delete: if isAdmin();
+    }
+
+    match /projects/{projectId} {
+      allow read: if true;
+      allow write: if isAdmin() && isValidId(projectId) && isValidPortfolioItem(incoming());
+    }
+
+    match /services/{serviceId} {
+      allow read: if true;
+      allow write: if isAdmin() && isValidId(serviceId) && isValidPortfolioItem(incoming());
+    }
+
+    match /testimonials/{testimonialId} {
+      allow read: if true;
+      allow write: if isAdmin() && isValidId(testimonialId) && isValidPortfolioItem(incoming());
+    }
+
+    match /personalInfo/{docId} {
+      allow read: if true;
+      allow write: if isAdmin() && isValidId(docId) && isValidPortfolioItem(incoming());
+    }
+
+    match /ads/{adId} {
+      allow read: if true; // Ads need to be read by the frontend to be displayed
+      allow create: if isAdmin() && isValidId(adId) && isValidAd(incoming(), true);
+      allow update: if isAdmin() && isValidId(adId) && isValidAd(incoming(), false);
+      allow delete: if isAdmin();
+    }
+
+    match /contactSubmissions/{subId} {
+      allow read: if isAdmin();
+      allow create: if isValidId(subId) && isValidContact(incoming());
+      allow update: if isAdmin() && isValidId(subId) && incoming().diff(existing()).affectedKeys().hasOnly(['read']);
+      allow delete: if isAdmin();
+    }
+  }
+}
