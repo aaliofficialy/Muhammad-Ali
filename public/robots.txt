@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://aaliofficialy.github.io/Muhammad-Ali/sitemap.xml
