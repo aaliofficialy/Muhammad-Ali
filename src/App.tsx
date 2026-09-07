@@ -12,7 +12,8 @@ import BlogPreview from "./components/BlogPreview";
 import Testimonials from "./components/Testimonials";
 import Contact from "./components/Contact";
 import AdBanner from "./components/AdBanner";
-import { ArrowUp, Sparkles } from "lucide-react";
+import ProfessionalHighlights from "./components/ProfessionalHighlights";
+import { ArrowUp, MessageCircle, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { AppProvider, useApp } from "./context/AppContext";
 import FollowModal from "./components/FollowModal";
@@ -40,6 +41,7 @@ function AppContent() {
   };
 
   const scrollBackToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
+  const whatsappUrl = `https://wa.me/${personalInfo.whatsapp.replace(/[+\s-]/g, "")}?text=${encodeURIComponent(`Hi ${personalInfo.name}, I'd like to discuss a project.`)}`;
 
   return (
     <div className="relative min-h-screen bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 selection:bg-gold selection:text-slate-950 transition-colors duration-300">
@@ -61,6 +63,10 @@ function AppContent() {
             {activeSection === "home" && (
               <>
                 <Hero onCtaClick={() => scrollToSection("contact")} onSecondaryClick={() => scrollToSection("services")} />
+                <ProfessionalHighlights
+                  onContact={() => scrollToSection("contact")}
+                  onProjects={() => scrollToSection("portfolio")}
+                />
                 <SearchBar />
                 <AdBanner location="homepage" className="my-8 max-w-7xl mx-auto" />
                 <BlogPreview />
@@ -86,30 +92,31 @@ function AppContent() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row justify-between items-center gap-5 text-xs text-neutral-500 font-mono">
             <div className="flex items-center space-x-3 text-left select-none">
-              <div className="w-9 h-9 rounded-none bg-gold/10 border border-gold/40 flex items-center justify-center font-bold gold-text">
-                <span>MA</span>
-              </div>
+              <div className="w-9 h-9 rounded-none bg-gold/10 border border-gold/40 flex items-center justify-center font-bold gold-text"><span>MA</span></div>
               <div>
                 <span className="block font-semibold text-neutral-200 tracking-wide">{personalInfo.name.toUpperCase()}</span>
-                <span className="block text-[10px] text-neutral-500 tracking-widest">{personalInfo.title.toUpperCase()}</span>
+                <span className="block text-[10px] text-neutral-500 tracking-widest">AI • DATA • WEB • DIGITAL GROWTH</span>
               </div>
             </div>
-            <div className="flex items-center gap-2 text-neutral-500 uppercase tracking-widest">
-              <Sparkles size={11} className="text-gold" />
-              <span>AI • IT • DIGITAL GROWTH</span>
-            </div>
+            <div className="flex items-center gap-2 text-neutral-500 uppercase tracking-widest"><Sparkles size={11} className="text-gold" /><span>BUILD • AUTOMATE • GROW</span></div>
             <div className="text-neutral-600">PORTFOLIO 2.0</div>
           </div>
         </div>
       </footer>
 
+      <a
+        id="floating-whatsapp"
+        href={whatsappUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Chat on WhatsApp"
+        className="fixed bottom-6 left-6 z-40 w-12 h-12 flex items-center justify-center rounded-full bg-[#25D366] text-white shadow-xl hover:scale-110 transition-transform duration-300"
+      >
+        <MessageCircle size={23} />
+      </a>
+
       {showToTopBtn && (
-        <button
-          id="scroll-to-top"
-          onClick={scrollBackToTop}
-          className="fixed bottom-6 right-6 z-40 p-3 rounded-none bg-slate-900 text-white hover:bg-gold hover:text-slate-950 shadow-lg border border-slate-800 transition-all duration-300 transform scale-100 hover:scale-105 active:scale-95 cursor-pointer"
-          aria-label="Scroll to top"
-        >
+        <button id="scroll-to-top" onClick={scrollBackToTop} className="fixed bottom-6 right-6 z-40 p-3 rounded-none bg-slate-900 text-white hover:bg-gold hover:text-slate-950 shadow-lg border border-slate-800 transition-all duration-300 transform scale-100 hover:scale-105 active:scale-95 cursor-pointer" aria-label="Scroll to top">
           <ArrowUp size={18} />
         </button>
       )}
