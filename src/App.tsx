@@ -84,21 +84,21 @@ function AppContent() {
 
       <footer className="bg-neutral-950 text-neutral-400 py-12 border-t border-neutral-900 text-center">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0 text-xs text-neutral-500 font-mono">
-            <div className="flex items-center space-x-2 text-left select-none">
-              <div className="w-8 h-8 rounded-none bg-gold/15 border border-gold/35 bg-black flex items-center justify-center font-bold gold-text">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-5 text-xs text-neutral-500 font-mono">
+            <div className="flex items-center space-x-3 text-left select-none">
+              <div className="w-9 h-9 rounded-none bg-gold/10 border border-gold/40 flex items-center justify-center font-bold gold-text">
                 <span>MA</span>
               </div>
               <div>
-                <span className="block font-semibold text-neutral-200">{personalInfo.name.toUpperCase()}</span>
-                <span className="block text-[10px] text-neutral-500">{personalInfo.title.toUpperCase()}</span>
+                <span className="block font-semibold text-neutral-200 tracking-wide">{personalInfo.name.toUpperCase()}</span>
+                <span className="block text-[10px] text-neutral-500 tracking-widest">{personalInfo.title.toUpperCase()}</span>
               </div>
             </div>
-            <div className="flex items-center space-x-2 text-neutral-400">
-              <Sparkles size={11} className="text-gold animate-pulse" />
-              <span>CRAFTED IN MODERN REACT & TAILWIND (GOLD EDITION)</span>
+            <div className="flex items-center gap-2 text-neutral-500 uppercase tracking-widest">
+              <Sparkles size={11} className="text-gold" />
+              <span>AI • IT • DIGITAL GROWTH</span>
             </div>
-            <div>BUILD VERSION: 1.5.0 (STABLE)</div>
+            <div className="text-neutral-600">PORTFOLIO 2.0</div>
           </div>
         </div>
       </footer>
@@ -107,7 +107,7 @@ function AppContent() {
         <button
           id="scroll-to-top"
           onClick={scrollBackToTop}
-          className="fixed bottom-6 right-6 z-40 p-3 rounded-none bg-slate-900 text-white hover:bg-gold hover:text-slate-950 shadow-lg border border-slate-850 transition-all duration-300 transform scale-100 hover:scale-105 active:scale-95 cursor-pointer"
+          className="fixed bottom-6 right-6 z-40 p-3 rounded-none bg-slate-900 text-white hover:bg-gold hover:text-slate-950 shadow-lg border border-slate-800 transition-all duration-300 transform scale-100 hover:scale-105 active:scale-95 cursor-pointer"
           aria-label="Scroll to top"
         >
           <ArrowUp size={18} />
