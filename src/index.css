@@ -12,36 +12,19 @@
   --color-gold-dark: #A68344;
 }
 
-.gold-text {
-  color: #C5A059;
-}
-.gold-bg {
-  background-color: #C5A059;
-}
-.gold-border {
-  border-color: #C5A059;
+.gold-text { color: #C5A059; }
+.gold-bg { background-color: #C5A059; }
+.gold-border { border-color: #C5A059; }
+
+html { scroll-behavior: smooth; transition: background-color 0.3s ease, color 0.3s ease; }
+body { font-family: var(--font-sans); background-color: #ffffff; color: #171717; overflow-x: hidden; transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease; }
+html.dark body { background-color: #0b0f19; color: #f1f5f9; }
+select, input, textarea { transition: all 0.2s ease-in-out; }
+
+/* Premium but restrained motion: respect users who request less animation. */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
 }
 
-html {
-  scroll-behavior: smooth;
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-/* Custom continuous background layout tweaks */
-body {
-  font-family: var(--font-sans);
-  background-color: #ffffff;
-  color: #171717;
-  overflow-x: hidden;
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-}
-
-html.dark body {
-  background-color: #0b0f19;
-  color: #f1f5f9;
-}
-
-/* Decorative focus outlines on select boxes */
-select, input, textarea {
-  transition: all 0.2s ease-in-out;
-}
+:focus-visible { outline: 2px solid #C5A059; outline-offset: 3px; }
