@@ -16,8 +16,10 @@ import ProfessionalHighlights from "./components/ProfessionalHighlights";
 import DataAnalyticsShowcase from "./components/DataAnalyticsShowcase";
 import FeaturedCaseStudies from "./components/FeaturedCaseStudies";
 import PremiumStats from "./components/PremiumStats";
+import AIWorkflowShowcase from "./components/AIWorkflowShowcase";
+import AnimatedSkillStack from "./components/AnimatedSkillStack";
 import { ArrowUp, MessageCircle, Sparkles } from "lucide-react";
-import { motion, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence, useScroll, useSpring, useReducedMotion } from "motion/react";
 import { AppProvider, useApp } from "./context/AppContext";
 import FollowModal from "./components/FollowModal";
 
@@ -25,22 +27,29 @@ function AppContent() {
   const { personalInfo, activeSection, setActiveSection } = useApp();
   const [preSelectedService, setPreSelectedService] = useState("");
   const [showToTopBtn, setShowToTopBtn] = useState(false);
-  useEffect(() => { const handleScroll = () => setShowToTopBtn(window.scrollY > 300); window.addEventListener("scroll", handleScroll); return () => window.removeEventListener("scroll", handleScroll); }, []);
-  useEffect(() => { window.scrollTo({ top: 0, behavior: "smooth" }); }, [activeSection]);
+  const reduceMotion = useReducedMotion();
+  const { scrollYProgress } = useScroll();
+  const progress = useSpring(scrollYProgress, { stiffness: 120, damping: 30, restDelta: 0.001 });
+
+  useEffect(() => { const handleScroll = () => setShowToTopBtn(window.scrollY > 300); window.addEventListener("scroll", handleScroll, { passive: true }); return () => window.removeEventListener("scroll", handleScroll); }, []);
+  useEffect(() => { window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" }); }, [activeSection, reduceMotion]);
   const scrollToSection = (id: string) => setActiveSection(id);
   const handleInquireService = (serviceTitle: string) => { setPreSelectedService(serviceTitle); scrollToSection("contact"); };
   const whatsappUrl = `https://wa.me/${personalInfo.whatsapp.replace(/[+\s-]/g, "")}?text=${encodeURIComponent(`Hi ${personalInfo.name}, I'd like to discuss a project.`)}`;
 
   return <div className="relative min-h-screen bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 selection:bg-gold selection:text-slate-950 transition-colors duration-300">
+    <motion.div className="fixed top-0 left-0 right-0 z-[70] h-0.5 bg-gold origin-left" style={{ scaleX: progress }} aria-hidden="true" />
     <Navbar activeSection={activeSection} setActiveSection={setActiveSection} />
     <div className="pt-16"><AdBanner location="header" /></div>
     <main className={activeSection !== "home" ? "min-h-[calc(100vh-240px)]" : ""}>
-      <AnimatePresence mode="wait"><motion.div key={activeSection} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} transition={{ duration: 0.25, ease: "easeInOut" }}>
+      <AnimatePresence mode="wait"><motion.div key={activeSection} initial={reduceMotion ? { opacity: 1 } : { opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={reduceMotion ? { opacity: 1 } : { opacity: 0, y: -12 }} transition={{ duration: reduceMotion ? 0 : .28, ease: "easeInOut" }}>
         {activeSection === "home" && <>
           <ProfessionalHero onContact={() => scrollToSection("contact")} onProjects={() => scrollToSection("portfolio")} />
           <PremiumStats />
           <ProfessionalHighlights onContact={() => scrollToSection("contact")} onProjects={() => scrollToSection("portfolio")} />
+          <AIWorkflowShowcase onContact={() => scrollToSection("contact")} />
           <DataAnalyticsShowcase />
+          <AnimatedSkillStack />
           <FeaturedCaseStudies onViewAll={() => scrollToSection("portfolio")} />
           <SearchBar />
           <AdBanner location="homepage" className="my-8 max-w-7xl mx-auto" />
@@ -59,7 +68,7 @@ function AppContent() {
     <AdBanner location="footer" className="mt-8" />
     <footer className="bg-neutral-950 text-neutral-400 py-12 border-t border-neutral-900 text-center"><div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"><div className="flex flex-col sm:flex-row justify-between items-center gap-5 text-xs text-neutral-500 font-mono"><div className="flex items-center space-x-3 text-left"><div className="w-9 h-9 bg-gold/10 border border-gold/40 flex items-center justify-center font-bold gold-text">MA</div><div><span className="block font-semibold text-neutral-200 tracking-wide">{personalInfo.name.toUpperCase()}</span><span className="block text-[10px] text-neutral-500 tracking-widest">AI • DATA • WEB • DIGITAL GROWTH</span></div></div><div className="flex items-center gap-2 uppercase tracking-widest"><Sparkles size={11} className="text-gold"/><span>BUILD • AUTOMATE • GROW</span></div><div className="text-neutral-600">PORTFOLIO 2.0</div></div></div></footer>
     <a id="floating-whatsapp" href={whatsappUrl} target="_blank" rel="noopener noreferrer" aria-label="Chat on WhatsApp" className="fixed bottom-6 left-6 z-40 w-12 h-12 flex items-center justify-center rounded-full bg-[#25D366] text-white shadow-xl hover:scale-110 transition-transform"><MessageCircle size={23}/></a>
-    {showToTopBtn && <button id="scroll-to-top" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="fixed bottom-6 right-6 z-40 p-3 bg-slate-900 text-white hover:bg-gold hover:text-slate-950 shadow-lg border border-slate-800 transition-all" aria-label="Scroll to top"><ArrowUp size={18}/></button>}
+    {showToTopBtn && <motion.button initial={{ opacity: 0, scale: .8 }} animate={{ opacity: 1, scale: 1 }} onClick={() => window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" })} className="fixed bottom-6 right-6 z-40 p-3 bg-slate-900 text-white hover:bg-gold hover:text-slate-950 shadow-lg border border-slate-800 transition-all" aria-label="Scroll to top"><ArrowUp size={18}/></motion.button>}
   </div>;
 }
 export default function App() { return <AppProvider><AppContent/><FollowModal/></AppProvider>; }
