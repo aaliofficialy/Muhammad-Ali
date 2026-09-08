@@ -15,6 +15,7 @@ import AdBanner from "./components/AdBanner";
 import ProfessionalHighlights from "./components/ProfessionalHighlights";
 import DataAnalyticsShowcase from "./components/DataAnalyticsShowcase";
 import FeaturedCaseStudies from "./components/FeaturedCaseStudies";
+import PremiumStats from "./components/PremiumStats";
 import { ArrowUp, MessageCircle, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { AppProvider, useApp } from "./context/AppContext";
@@ -34,9 +35,10 @@ function AppContent() {
     <Navbar activeSection={activeSection} setActiveSection={setActiveSection} />
     <div className="pt-16"><AdBanner location="header" /></div>
     <main className={activeSection !== "home" ? "min-h-[calc(100vh-240px)]" : ""}>
-      <AnimatePresence mode="wait"><motion.div key={activeSection} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} transition={{ duration: 0.2 }}>
+      <AnimatePresence mode="wait"><motion.div key={activeSection} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} transition={{ duration: 0.25, ease: "easeInOut" }}>
         {activeSection === "home" && <>
           <ProfessionalHero onContact={() => scrollToSection("contact")} onProjects={() => scrollToSection("portfolio")} />
+          <PremiumStats />
           <ProfessionalHighlights onContact={() => scrollToSection("contact")} onProjects={() => scrollToSection("portfolio")} />
           <DataAnalyticsShowcase />
           <FeaturedCaseStudies onViewAll={() => scrollToSection("portfolio")} />
