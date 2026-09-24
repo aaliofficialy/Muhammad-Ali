@@ -22,6 +22,7 @@ import { ArrowUp, MessageCircle, Sparkles } from "lucide-react";
 import { motion, AnimatePresence, useScroll, useSpring, useReducedMotion } from "motion/react";
 import { AppProvider, useApp } from "./context/AppContext";
 import FollowModal from "./components/FollowModal";
+import ProfessionalProcess from "./components/ProfessionalProcess";
 
 function AppContent() {
   const { personalInfo, activeSection, setActiveSection } = useApp();
@@ -51,6 +52,7 @@ function AppContent() {
           <DataAnalyticsShowcase />
           <AnimatedSkillStack />
           <FeaturedCaseStudies onViewAll={() => scrollToSection("portfolio")} />
+          <ProfessionalProcess onContact={() => scrollToSection("contact")} />
           <SearchBar />
           <AdBanner location="homepage" className="my-8 max-w-7xl mx-auto" />
           <BlogPreview />
