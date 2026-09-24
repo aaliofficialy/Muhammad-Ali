@@ -10,6 +10,23 @@ export default function Blog() {
   const { articles, setActiveSection, setSelectedArticleId, searchQuery, setSearchQuery } = useApp();
   const [selectedCategory, setSelectedCategory] = useState("All");
 
+  useEffect(() => {
+    const originalTitle = document.title;
+    const originalDescription = document.querySelector('meta[name="description"]')?.getAttribute("content");
+    document.title = "AI, Data & Digital Insights | Muhammad Ali";
+    let meta = document.querySelector('meta[name="description"]');
+    if (!meta) {
+      meta = document.createElement("meta");
+      meta.setAttribute("name", "description");
+      document.head.appendChild(meta);
+    }
+    meta.setAttribute("content", "Practical articles and insights on AI automation, data analytics, Excel, Power BI, web development, SEO and digital business solutions.");
+    return () => {
+      document.title = originalTitle;
+      if (meta && originalDescription) meta.setAttribute("content", originalDescription);
+    };
+  }, []);
+
   const categories = useMemo(() => {
     const cats = new Set(articles.map(a => a.category));
     return ["All", ...Array.from(cats)];
