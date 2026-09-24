@@ -35,41 +35,86 @@ export default function ArticleView() {
   }, [article?.content]);
 
   useEffect(() => {
-    if (article) {
-      const originalTitle = document.title;
-      const originalDesc = document.querySelector('meta[name="description"]')?.getAttribute("content");
-      const originalKeywords = document.querySelector('meta[name="keywords"]')?.getAttribute("content");
+    if (!article) return;
 
-      document.title = article.seoMetadata?.title || `${article.title} | Corporate Intel`;
-      
-      let descMeta = document.querySelector('meta[name="description"]');
-      if (!descMeta) {
-          descMeta = document.createElement('meta');
-          descMeta.setAttribute('name', 'description');
-          document.head.appendChild(descMeta);
-      }
-      descMeta.setAttribute("content", article.seoMetadata?.description || article.excerpt);
+    const originalTitle = document.title;
+    const originalDesc = document.querySelector('meta[name="description"]')?.getAttribute("content");
+    const originalKeywords = document.querySelector('meta[name="keywords"]')?.getAttribute("content");
+    const originalCanonical = document.querySelector('link[rel="canonical"]')?.getAttribute("href");
 
-      if (article.seoMetadata?.keywords) {
-          let keywordsMeta = document.querySelector('meta[name="keywords"]');
-          if (!keywordsMeta) {
-              keywordsMeta = document.createElement('meta');
-              keywordsMeta.setAttribute('name', 'keywords');
-              document.head.appendChild(keywordsMeta);
-          }
-          keywordsMeta.setAttribute("content", article.seoMetadata.keywords);
-      }
+    const description = article.seoMetadata?.description || article.excerpt;
+    document.title = article.seoMetadata?.title || `${article.title} | Muhammad Ali`;
 
-      return () => {
-          document.title = originalTitle || "";
-          if (descMeta && originalDesc) descMeta.setAttribute("content", originalDesc);
-          if (originalKeywords) {
-             document.querySelector('meta[name="keywords"]')?.setAttribute("content", originalKeywords);
-          } else {
-             document.querySelector('meta[name="keywords"]')?.remove();
-          }
-      }
+    let descMeta = document.querySelector('meta[name="description"]');
+    if (!descMeta) {
+      descMeta = document.createElement("meta");
+      descMeta.setAttribute("name", "description");
+      document.head.appendChild(descMeta);
     }
+    descMeta.setAttribute("content", description);
+
+    if (article.seoMetadata?.keywords) {
+      let keywordsMeta = document.querySelector('meta[name="keywords"]');
+      if (!keywordsMeta) {
+        keywordsMeta = document.createElement("meta");
+        keywordsMeta.setAttribute("name", "keywords");
+        document.head.appendChild(keywordsMeta);
+      }
+      keywordsMeta.setAttribute("content", article.seoMetadata.keywords);
+    }
+
+    const canonicalUrl = window.location.href;
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (!canonical) {
+      canonical = document.createElement("link");
+      canonical.setAttribute("rel", "canonical");
+      document.head.appendChild(canonical);
+    }
+    canonical.setAttribute("href", canonicalUrl);
+
+    const structuredData = {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      headline: article.title,
+      description,
+      image: [article.thumbnail],
+      datePublished: article.publishDate,
+      dateModified: article.publishDate,
+      author: {
+        "@type": "Person",
+        name: article.author.name,
+        jobTitle: article.author.title,
+      },
+      publisher: {
+        "@type": "Person",
+        name: "Muhammad Ali",
+      },
+      mainEntityOfPage: { "@type": "WebPage", "@id": canonicalUrl },
+      articleSection: article.category,
+      keywords: article.tags.join(", "),
+      url: canonicalUrl,
+    };
+
+    let jsonLd = document.getElementById("article-structured-data");
+    if (!jsonLd) {
+      jsonLd = document.createElement("script");
+      jsonLd.id = "article-structured-data";
+      jsonLd.setAttribute("type", "application/ld+json");
+      document.head.appendChild(jsonLd);
+    }
+    jsonLd.textContent = JSON.stringify(structuredData);
+
+    return () => {
+      document.title = originalTitle || "";
+      if (descMeta && originalDesc) descMeta.setAttribute("content", originalDesc);
+      if (originalKeywords) {
+        document.querySelector('meta[name="keywords"]')?.setAttribute("content", originalKeywords);
+      } else {
+        document.querySelector('meta[name="keywords"]')?.remove();
+      }
+      if (canonical && originalCanonical) canonical.setAttribute("href", originalCanonical);
+      jsonLd?.remove();
+    };
   }, [article]);
 
   if (!article) {
